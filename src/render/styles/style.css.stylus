@@ -1,0 +1,176 @@
+$small = 600px
+$large = 1200px
+
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body
+  color #333
+  font-family 'Clear Sans'
+  font-size 18px
+  background #fcfcfc
+  text-rendering optimizeLegibility
+  position relative
+  min-height 100%
+  // padding-bottom 100px
+  -webkit-animation: fadein 1s; /* Safari, Chrome and Opera > 12.1 */
+   -moz-animation: fadein 1s; /* Firefox < 16 */
+    -ms-animation: fadein 1s; /* Internet Explorer */
+     -o-animation: fadein 1s; /* Opera < 12.1 */
+        animation: fadein 1s;
+
+
+code
+  font-size 14px
+  
+a
+  color #333
+  text-decoration none
+  transition: all 0.5s ease;
+  font-weight bold
+a:hover
+  //color #d50000
+  text-decoration underline
+  
+main
+  padding-bottom 115px !important
+  
+footer
+  position absolute
+  bottom 0
+  width 100%
+  padding 3rem
+  margin-top -115px
+  background #eee
+  font-size .8em
+  
+.post h2
+  color #ff2828
+
+.post--small
+  padding 1em 0
+  
+.post__header
+  padding 1em 10%
+  background #333
+  color #fff
+  
+.aside
+  position fixed
+  top 5
+  left 5
+  
+.icon-container
+  background #444
+  border-radius 2em
+  padding 10px
+  text-align center
+  width 50px
+  display inline-block
+  
+.icon 
+  font-size 36px
+  color #eee
+  
+@media all and (max-width: $small)
+  .post__header
+    padding 1em 1em
+  
+  .aside
+    position static
+  
+// @media all and (min-width: $small)
+//   .post__header
+//     padding 1em 10em
+  
+  
+.site-title
+  color #eee
+  
+.site-title--small
+  font-weight normal
+  font-style italic  
+  padding 1em
+  font-size 1.5em
+.subtitle
+  font-style italic
+  text-align right
+  color #ccc
+  
+  
+@media all and (min-width: $large)
+  .site-title
+    font-size 3em
+  
+  
+.fgred
+  color #ff2828
+
+  
+.sticky
+  position: fixed;
+  // top: 0;
+
+.text-center
+  text-align center
+  
+.marginless
+  margin 0
+  
+.list-none
+  list-style-type none
+
+.container
+  padding 1em
+  margin 0 auto
+  width 48em
+  
+@media all and (min-width: $small) and (max-width: $large)
+  .container
+    padding 1em 4em
+    width 100%
+  .sticky
+    position static
+  
+@media all and (max-width: $small)
+  .container
+    width 90%
+  .sticky
+    position static
+  
+.fggray
+  color #999
+
+
+@keyframes fadein {
+    from { opacity: 0.6; }
+    to   { opacity: 1; }
+}
+
+/* Firefox < 16 */
+@-moz-keyframes fadein {
+    from { opacity: 0.6; }
+    to   { opacity: 1; }
+}
+
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes fadein {
+    from { opacity: 0.6; }
+    to   { opacity: 1; }
+}
+
+/* Internet Explorer */
+@-ms-keyframes fadein {
+    from { opacity: 0.6; }
+    to   { opacity: 1; }
+}
+
+/* Opera < 12.1 */
+@-o-keyframes fadein {
+    from { opacity: 0.6; }
+    to   { opacity: 1; }
+}

@@ -1,0 +1,231 @@
+<html>
+<head>
+    <title>Mithril Sortable Table - Part 1 | Better With Coffee</title>
+    <meta name="generator" content="DocPad v6.69.0" />
+    <style >html.wait {
+	cursor: wait !important;
+	opacity: 0;
+	transition: opacity 0.5s ease;
+}</style><link  rel="stylesheet" href="/vendor/normalize.min.css" /><link  rel="stylesheet" href="/vendor/prism.css" /><link  rel="stylesheet" href="//brick.a.ssl.fastly.net/Clear+Sans:400,700,400i,700i" /><link  rel="stylesheet" href="/vendor/ionicons.min.css" /><link  rel="stylesheet" href="/styles/style.css" />
+    
+</head>
+<body>
+    <header class="post__header">
+    <div class="aside">
+        <a class="icon-container" href="/"><i class="icon ion-coffee"></i></a>
+        
+    </div>
+    <h1>Mithril Sortable Table - Part 1</h1>
+    <hr>
+    <time datatime="2014-08-30T00:00:00.000Z" class="fggray">
+        Aug 30 2014
+    </time>
+</header>
+<main class="container post">
+    <article>
+        <p>The front end development world of javascript is full of frameworks. When developing a web application, it makes sense to build on top of a framework with a good community rather than try to reinvent the wheel. After eliminating opininated and complicated frameworks, I ended up using <a href="http://knockoutjs.com/" title="KnockoutJS">KnockoutJS</a>. It&#39;s a small two-way binding library with easy to use syntax that you can pick up in 5 minutes. However, it&#39;s not very efficient in dealing with arrays. After doing more research, I think frameworks that reduce or even eliminate DOM manipulation (since this is where most of the performance issues come from) by the programmer are the future. Currently, the popular technique to reduce DOM manipulation is virtual DOM diffing. And <a href="https://facebook.github.io/react/" title="React">React</a> is the most popular framework utilizing that technique. I encourage you to read a <a href="http://jlongster.com/Removing-User-Interface-Complexity,-or-Why-React-is-Awesome">post</a> by James Long to learn more about it. Then there are also a few other frameworks - <a href="http://www.ractivejs.org/" title="RactiveJS">RactiveJS</a>, <a href="https://github.com/Raynos/mercury" title="Mercury">Mercury</a>, and <a href="http://famo.us/" title="Famous">Famous</a>. I have decided that I am going to try to learn <a href="http://lhorie.github.io/mithril/" title="Mithril">Mithril</a>. It&#39;s very lightweight, has great performance benchmarks, and it encourages you to write better code (as opposed to opinionated code) and therefore be a better developer. And since it&#39;s so small and simple, I don&#39;t see future versions of it breaking the api. </p>
+
+<h2>Starting Out</h2>
+
+<p>To get familiar with the framework, I decided to create a sortable table. I am not going to cover the basics of Mithril here since its website already has an excellent <a href="http://lhorie.github.io/mithril/getting-started.html">guide</a>. Coincidentally, the author of Mithril has recently <a href="http://lhorie.github.io/mithril-blog/vanilla-table-sorting.html">posted</a> his own version of sortable table but I am going to take a slightly different and more thorough approach. </p>
+
+<p>To start off, let&#39;s create a table with a single column. </p>
+
+<pre><code class="lang-coffeescript">var table = {
+    data: [11,10,12],
+    header: [&quot;item&quot;],
+    controller: function() {
+        this.data = m.prop(table.data);
+        this.header = m.prop(table.header);
+    },
+    view: function(ctrl) {
+        var head = ctrl.header().map(function (item,index) {
+                return m(&quot;tr&quot;,[m(&quot;th&quot;,{class:&quot;red&quot;}, item)])
+            })
+        var body = ctrl.data().map(function (item,index) {
+                return m(&quot;tr&quot;,[m(&quot;td&quot;, item)])
+            })
+        return m(&quot;table&quot;,[head,body]);        
+    },
+}
+
+m.module(document.getElementById(&#39;container&#39;), table); 
+</code></pre>
+
+<p><a href="http://jsfiddle.net/jjk8bxeq/5/">JSFiddle</a></p>
+
+<p>Not very exciting. Let me point out a couple of things.</p>
+
+<p>I am using <code>m.prop()</code> on the controller properties. It&#39;s just a simple getter/setter utility. This is handy since if we decide to change the definition of a property, our code elsewhere will not be affected.</p>
+
+<p>We are writing our html in javascript. Implementing flow control in javascript avoids the performance problems of <code>foreach, if</code> constructs in KnockoutJS. However, the designers on your team are probably not going to put up with having to use javascript. This problem can be alleviated somewhat by using React&#39;s <a href="http://facebook.github.io/react/docs/jsx-in-depth.html">JSX</a> syntax <a href="https://github.com/insin/msx">ported</a> to Mithril. In this post, I&#39;ll stick with plain javascript.</p>
+
+<h2>Sorting On Click</h2>
+
+<p>Let&#39;s sort the table when we click on the table header. But first let&#39;s modify our data to be more realistic.</p>
+
+<pre><code class="lang-javascript">var table = {
+    state: {},
+    data: [{
+        value: 11
+    }, {
+        value: 10
+    }, {
+        value: 12
+    }],
+    header: [{
+        display: &quot;Value&quot;,
+        sortBy: &quot;value&quot;,
+        sortType: &quot;int&quot;
+    }],
+    controller: function () {
+        this.data = m.prop(table.data);
+        this.header = m.prop(table.header);
+    },
+    view: function (ctrl) {
+        var head = ctrl.header().map(function (item, index) {
+            return m(&quot;tr&quot;, [m(&quot;th&quot;, {
+                class: &quot;red&quot;,
+                    &quot;data-sort&quot;: item.sortType,
+                    &quot;data-sort-by&quot;: item.sortBy
+            }, item.display)])
+        })
+        var body = ctrl.data().map(function (item, index) {
+            return m(&quot;tr&quot;, [m(&quot;td&quot;, item.value)])
+        })
+        return m(&quot;table&quot;, [head, body]);
+    },
+}
+
+m.module(document.getElementById(&#39;container&#39;), table);
+</code></pre>
+
+<p>We have added <code>sortBy</code> and <code>sortType</code> properties to the table header. We will be keeping track of which column is sorted by putting those properties in the <code>state</code> property of the table. Our <code>data</code> property in the table is now a list of objects rather than primitives.</p>
+
+<p>Rather than posting small code snippets here and there, I am going to describe the coding process and then post the completed code. Let&#39;s start by adding onclick event handler to the table element. We attach to the table itself rather than the individual headers because events in javascript propagate to the parent elements. In the handler function, we can access the clicked html element through <code>event.target</code>. Then we call a model function to update the sort state. Once the state is updated, the model calls the controller function to sort the data.</p>
+
+<pre><code class="lang-coffeescript">var table = {
+    state: {},
+    data: [{
+        value: 11
+    }, {
+        value: 10
+    }, {
+        value: 12
+    }],
+    header: [{
+        display: &quot;Value&quot;,
+        sortBy: &quot;value&quot;,
+        sortType: &quot;int&quot;
+    }],
+    changeSortState: function (sortBy, sortType, ctrl) {
+        if (table.state.sort === null || table.state.sort === undefined) {
+            table.state.sort = {
+                sortBy: sortBy,
+                sortType: sortType
+            };
+        }
+        if (table.state.sort.sortDir === &quot;asc&quot;) {
+            table.state.sort.sortDir = &quot;des&quot;;
+        } else {
+            table.state.sort.sortDir = &quot;asc&quot;;
+        }
+        ctrl.sortData();
+    },
+    controller: function () {
+        this.data = m.prop(table.data);
+        this.header = m.prop(table.header);
+        this.sortData = function () {
+            var sortValues = {
+                asc: 1,
+                des: -1
+            }
+            var sortMult = sortValues[table.state.sort.sortDir]
+            this.data().sort(function (a, b) {
+                return sortMult * (a[table.state.sort.sortBy] - b[table.state.sort.sortBy])
+            });
+        }
+        this.handleHeaderClick = function (e) {
+            var sortType = e.target.getAttribute(&quot;data-sort&quot;);
+            if (sortType) {
+                table.changeSortState(e.target.getAttribute(&quot;data-sort-by&quot;), sortType, this);
+            }
+        }.bind(this);
+    },
+    view: function (ctrl) {
+        var head = ctrl.header().map(function (item, index) {
+            return m(&quot;tr&quot;, [m(&quot;th.clickable&quot;, {
+                class: &quot;red&quot;,
+                    &quot;data-sort&quot;: item.sortType,
+                    &quot;data-sort-by&quot;: item.sortBy
+            }, item.display)])
+        })
+        var body = ctrl.data().map(function (item, index) {
+            return m(&quot;tr&quot;, [m(&quot;td&quot;, item.value)])
+        })
+        return m(&quot;table&quot;, {
+            onclick: ctrl.handleHeaderClick
+        }, [head, body]);
+    },
+}
+
+m.module(document.getElementById(&#39;container&#39;), table);
+</code></pre>
+
+<p><a href="http://jsfiddle.net/jjk8bxeq/8/">JSFiddle</a></p>
+
+<p>In part 2, we will add more columns, initial sort, and random data.</p>
+
+    </article>
+</main>
+    <footer>
+        © 2014 Vlad Fursa. All Rights Reserved.
+    </footer>
+    <script >(function(){
+	/* Did we just livereload? */
+var log = !!(localStorage && console && console.log && true);
+if ( log && localStorage.getItem('/docpad-livereload/reloaded') === 'yes' ) {
+	localStorage.removeItem('/docpad-livereload/reloaded');
+	console.log('LiveReload completed at', new Date())
+}
+
+/* Listen for the regenerated event and perform a reload of the page when the event occurs */
+var listen = function(){
+	var primus = new Primus('/docpad-livereload');
+	primus.on('data', function(data){
+		if ( data && data.message ) {
+			if ( data.message === 'generateBefore' ) {
+				if ( log ) {
+					console.log('LiveReload started at', new Date());
+				}
+				if ( typeof document.getElementsByTagName !== 'undefined' ) {
+	document.getElementsByTagName('html')[0].className += ' wait';
+}
+			}
+			else if ( data.message === 'generateAfter' ) {
+				if ( log ) {
+					localStorage.setItem('/docpad-livereload/reloaded', 'yes');
+				}
+				document.location.reload();
+			}
+		}
+	});
+};
+	/* Inject socket into our page */
+var inject = function(){
+	var t = document.createElement('script');
+	t.type = 'text/javascript';
+	t.async = 'async';
+	t.src = '/primus/primus.js';
+	t.onload = listen;
+	var s = document.getElementsByTagName('script')[0];
+	s.parentNode.insertBefore(t, s);
+};
+	if ( typeof Primus !== 'undefined' ) {
+		listen();
+	} else {
+		inject();
+	}
+})();</script><script defer="defer"  src="/vendor/prism.js"></script>
+</body>
+</html>

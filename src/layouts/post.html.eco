@@ -1,0 +1,19 @@
+---
+layout: "default"
+---
+<header class="post__header">
+    <div class="aside">
+        <a class="icon-container" href="/"><i class="icon ion-coffee"></i></a>
+        
+    </div>
+    <h1><%- @document.title %></h1>
+    <hr>
+    <time datatime="<%= @document.date.toISOString() %>" class="fggray">
+        <%= @document.date.toDateString().split(" ").slice(1).join(" ") %>
+    </time>
+</header>
+<main class="container post">
+    <article>
+        <%- @content %>
+    </article>
+</main>
