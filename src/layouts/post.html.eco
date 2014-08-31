@@ -1,10 +1,10 @@
 ---
 layout: "default"
 ---
-<header class="post__header">
+<header class="header">
     <div class="aside">
         <a class="icon-container" href="/"><i class="icon ion-coffee"></i></a>
-        
+
     </div>
     <h1><%- @document.title %></h1>
     <hr>

@@ -1,9 +1,10 @@
 <html>
 <head>
     <title><%= @getPreparedTitle() %></title>
+    <meta name=viewport content="width=device-width, initial-scale=1">
     <%- @getBlock("meta").toHTML() %>
     <%- @getBlock("styles").add(["/vendor/normalize.min.css","/vendor/prism.css","//brick.a.ssl.fastly.net/Clear+Sans:400,700,400i,700i","/vendor/ionicons.min.css","/styles/style.css"]).toHTML() %>
-    
+
 </head>
 <body>
     <%- @content %>

@@ -2,7 +2,7 @@
 layout: "default"
 ---
 
-<header class="post__header">
+<header class="header">
     <h1 class="text-center marginless site-title"><%= @site.title %></h1>
     <p class="subtitle marginless">Blog on web development</p>
 </header>
