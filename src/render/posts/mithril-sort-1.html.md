@@ -13,7 +13,7 @@ To get familiar with the framework, I decided to create a sortable table. I am n
 
 To start off, let's create a table with a single column. 
 
-``` lang-coffeescript
+``` lang-javascript
 var table = {
     data: [11,10,12],
     header: ["item"],
@@ -70,7 +70,7 @@ var table = {
         var head = ctrl.header().map(function (item, index) {
             return m("tr", [m("th", {
                 class: "red",
-                    "data-sort": item.sortType,
+                    "data-sort-type": item.sortType,
                     "data-sort-by": item.sortBy
             }, item.display)])
         })
@@ -86,9 +86,9 @@ m.module(document.getElementById('container'), table);
 
 We have added `sortBy` and `sortType` properties to the table header. We will be keeping track of which column is sorted by putting those properties in the `state` property of the table. Our `data` property in the table is now a list of objects rather than primitives.
 
-Rather than posting small code snippets here and there, I am going to describe the coding process and then post the completed code. Let's start by adding onclick event handler to the table element. We attach to the table itself rather than the individual headers because events in javascript propagate to the parent elements. In the handler function, we can access the clicked html element through `event.target`. Then we call a model function to update the sort state. Once the state is updated, the model calls the controller function to sort the data.
+Rather than posting small code snippets here and there, I am going to go through the logic and then post the completed code. Start by adding onclick event handler `ctrl.handleTableClick` to the table element. We attach to the table itself rather than the individual headers because events in javascript propagate to the parent elements. In the handler function `ctrl.handleTableClick`, we can access the clicked html element through `event.target`. If the element clicked is a header, we then call `table.changeSortState`. This function updates the table state appropriately. It then calls the controller (which we pass in as a parameter) function `sortData`. Inside `sortData`, we access the table state to determine how to sort the data and then sort it appropriately. Once there is a change in controller data, Mithril will update our view (after the controller has finished running all of its code).
 
-```lang-coffeescript
+```lang-javascript
 var table = {
     state: {},
     data: [{
@@ -105,11 +105,10 @@ var table = {
     }],
     changeSortState: function (sortBy, sortType, ctrl) {
         if (table.state.sort === null || table.state.sort === undefined) {
-            table.state.sort = {
-                sortBy: sortBy,
-                sortType: sortType
-            };
+            table.state.sort = {};
         }
+        table.state.sort.sortBy = sortBy;
+        table.state.sort.sortType = sortType;
         if (table.state.sort.sortDir === "asc") {
             table.state.sort.sortDir = "des";
         } else {
@@ -130,10 +129,11 @@ var table = {
                 return sortMult * (a[table.state.sort.sortBy] - b[table.state.sort.sortBy])
             });
         }
-        this.handleHeaderClick = function (e) {
-            var sortType = e.target.getAttribute("data-sort");
-            if (sortType) {
-                table.changeSortState(e.target.getAttribute("data-sort-by"), sortType, this);
+        this.handleTableClick = function (e) {
+            var sortType = e.target.getAttribute("data-sort-type");
+            var sortBy = e.target.getAttribute("data-sort-by");
+            if (sortBy && sortType) {
+                table.changeSortState(sortBy, sortType, this);
             }
         }.bind(this);
     },
@@ -141,7 +141,7 @@ var table = {
         var head = ctrl.header().map(function (item, index) {
             return m("tr", [m("th.clickable", {
                 class: "red",
-                    "data-sort": item.sortType,
+                    "data-sort-type": item.sortType,
                     "data-sort-by": item.sortBy
             }, item.display)])
         })
@@ -149,7 +149,7 @@ var table = {
             return m("tr", [m("td", item.value)])
         })
         return m("table", {
-            onclick: ctrl.handleHeaderClick
+            onclick: ctrl.handleTableClick
         }, [head, body]);
     },
 }
@@ -172,4 +172,4 @@ In part 2, we will add more columns, initial sort, and random data.
 [10]: http://jsfiddle.net/jjk8bxeq/5/
 [11]: http://facebook.github.io/react/docs/jsx-in-depth.html
 [12]: https://github.com/insin/msx
-[13]: http://jsfiddle.net/jjk8bxeq/8/
+[13]: http://jsfiddle.net/jjk8bxeq/9/
