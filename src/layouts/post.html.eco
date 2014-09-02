@@ -1,5 +1,6 @@
 ---
 layout: "default"
+scripts: "/scripts/post1.js"
 ---
 <header class="header">
     <div class="aside">
@@ -11,6 +12,15 @@ layout: "default"
     <time datatime="<%= @document.date.toISOString() %>" class="fggray">
         <%= @document.date.toDateString().split(" ").slice(1).join(" ") %>
     </time>
+    <div class="switch-toggle">
+      <input id="js" name="lang" type="radio">
+      <label for="js" onclick="showJs()">JS</label>
+    
+      <input id="cs" name="lang" type="radio" checked>
+      <label for="cs" onclick="showCs()">Coffee</label>
+    
+      <a></a>
+    </div>
 </header>
 <main class="container post">
     <article>

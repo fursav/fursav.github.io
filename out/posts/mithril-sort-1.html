@@ -19,8 +19,17 @@
     <h1>Mithril Sortable Table - Part 1</h1>
     <hr>
     <time datatime="2014-08-30T00:00:00.000Z" class="fggray">
-        Aug 29 2014
+        Aug 30 2014
     </time>
+    <div class="switch-toggle">
+      <input id="js" name="lang" type="radio">
+      <label for="js" onclick="showJs()">JS</label>
+    
+      <input id="cs" name="lang" type="radio" checked>
+      <label for="cs" onclick="showCs()">Coffee</label>
+    
+      <a></a>
+    </div>
 </header>
 <main class="container post">
     <article>
@@ -32,7 +41,7 @@
 
 <p>To start off, let&#39;s create a table with a single column. </p>
 
-<pre><code class="lang-javascript">var table = {
+<pre><code class="language-javascript">var table = {
     data: [11,10,12],
     header: [&quot;item&quot;],
     controller: function() {
@@ -65,7 +74,7 @@ m.module(document.getElementById(&#39;container&#39;), table);
 
 <p>Let&#39;s sort the table when we click on the table header. But first let&#39;s modify our data to be more realistic.</p>
 
-<pre><code class="lang-javascript">var table = {
+<pre><code class="language-javascript">var table = {
     state: {},
     data: [{
         value: 11
@@ -105,7 +114,7 @@ m.module(document.getElementById(&#39;container&#39;), table);
 
 <p>Rather than posting small code snippets here and there, I am going to go through the logic and then post the completed code. Start by adding onclick event handler <code>ctrl.handleTableClick</code> to the table element. We attach to the table itself rather than the individual headers because events in javascript propagate to the parent elements. In the handler function <code>ctrl.handleTableClick</code>, we can access the clicked html element through <code>event.target</code>. If the element clicked is a header, we then call <code>table.changeSortState</code>. This function updates the table state appropriately. It then calls the controller (which we pass in as a parameter) function <code>sortData</code>. Inside <code>sortData</code>, we access the table state to determine how to sort the data and then sort it appropriately. Once there is a change in controller data, Mithril will update our view (after the controller has finished running all of its code).</p>
 
-<pre><code class="lang-javascript">var table = {
+<pre><code class="language-javascript">var table = {
     state: {},
     data: [{
         value: 11
@@ -227,6 +236,6 @@ var inject = function(){
 	} else {
 		inject();
 	}
-})();</script><script defer="defer"  src="/vendor/prism.js"></script>
+})();</script><script defer="defer"  src="/vendor/prism.js"></script><script defer="defer"  src="/vendor/zepto.min.js"></script><script defer="defer"  src="/scripts/post1.js"></script>
 </body>
 </html>

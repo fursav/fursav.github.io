@@ -27,14 +27,14 @@ body
         animation: fadein 1s;
 
 main
-  padding-bottom 115px !important
+  padding-bottom 150px !important
 
 footer
   position absolute
   bottom 0
   width 100%
   padding 3rem
-  margin-top -115px
+  // margin-top -120px
   background #eee
   font-size .8em
 
@@ -85,6 +85,9 @@ a:hover
 
 .marginless
   margin 0
+  
+.hidden
+  visibility hidden
 
 // components
 
@@ -132,25 +135,31 @@ a:hover
 
 @media all and (max-width: $small)
   .header
-    padding 1em 1em
+    padding 1rem 1rem
 
   .aside
     position static
 
 @media all and (min-width: $large)
   .site-title
-    font-size 3em
+    font-size 3rem
 
 .container
-  padding 1em
+  padding 1rem
   margin 0 auto
-  width 48em
+  width 48rem
 
 @media all and (min-width: $small) and (max-width: $large)
   .container
-    padding 1em 4em
+    padding 1rem 4rem
     width 100%
 
 @media all and (max-width: $small)
   .container
-    width 90%
+    padding 1rem
+    width 100%
+    
+.switch-toggle
+  display inline-block
+  float: right
+  text-align right

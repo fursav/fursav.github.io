@@ -13,7 +13,7 @@ To get familiar with the framework, I decided to create a sortable table. I am n
 
 To start off, let's create a table with a single column. 
 
-``` lang-javascript
+``` language-javascript
 var table = {
     data: [11,10,12],
     header: ["item"],
@@ -47,7 +47,7 @@ Sorting On Click
 
 Let's sort the table when we click on the table header. But first let's modify our data to be more realistic.
 
-``` lang-javascript
+``` language-javascript
 var table = {
     state: {},
     data: [{
@@ -88,7 +88,7 @@ We have added `sortBy` and `sortType` properties to the table header. We will be
 
 Rather than posting small code snippets here and there, I am going to go through the logic and then post the completed code. Start by adding onclick event handler `ctrl.handleTableClick` to the table element. We attach to the table itself rather than the individual headers because events in javascript propagate to the parent elements. In the handler function `ctrl.handleTableClick`, we can access the clicked html element through `event.target`. If the element clicked is a header, we then call `table.changeSortState`. This function updates the table state appropriately. It then calls the controller (which we pass in as a parameter) function `sortData`. Inside `sortData`, we access the table state to determine how to sort the data and then sort it appropriately. Once there is a change in controller data, Mithril will update our view (after the controller has finished running all of its code).
 
-```lang-javascript
+```language-javascript
 var table = {
     state: {},
     data: [{
