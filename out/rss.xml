@@ -1,85 +1,17 @@
-<html>
-<head>
-    <title>Mithril Sortable Table - Part 1 | Better With Coffee</title>
-    <meta name=viewport content="width=device-width, initial-scale=1">
-    <meta name="generator" content="DocPad v6.69.0" />
-    <style >html.wait {
-	cursor: wait !important;
-	opacity: 0;
-	transition: opacity 0.5s ease;
-}</style><link  rel="stylesheet" href="/vendor/normalize.min.css" /><link  rel="stylesheet" href="/vendor/prism.css" /><link  rel="stylesheet" href="//brick.a.ssl.fastly.net/Clear+Sans:400,700,400i,700i" /><link  rel="stylesheet" href="/vendor/ionicons.min.css" /><link  rel="stylesheet" href="/styles/style.css" />
-
-    <script >(function(){
-	/* Did we just livereload? */
-var log = !!(localStorage && console && console.log && true);
-if ( log && localStorage.getItem('/docpad-livereload/reloaded') === 'yes' ) {
-	localStorage.removeItem('/docpad-livereload/reloaded');
-	console.log('LiveReload completed at', new Date())
-}
-
-/* Listen for the regenerated event and perform a reload of the page when the event occurs */
-var listen = function(){
-	var primus = new Primus('/docpad-livereload');
-	primus.on('data', function(data){
-		if ( data && data.message ) {
-			if ( data.message === 'generateBefore' ) {
-				if ( log ) {
-					console.log('LiveReload started at', new Date());
-				}
-				if ( typeof document.getElementsByTagName !== 'undefined' ) {
-	document.getElementsByTagName('html')[0].className += ' wait';
-}
-			}
-			else if ( data.message === 'generateAfter' ) {
-				if ( log ) {
-					localStorage.setItem('/docpad-livereload/reloaded', 'yes');
-				}
-				document.location.reload();
-			}
-		}
-	});
-};
-	/* Inject socket into our page */
-var inject = function(){
-	var t = document.createElement('script');
-	t.type = 'text/javascript';
-	t.async = 'async';
-	t.src = '/primus/primus.js';
-	t.onload = listen;
-	var s = document.getElementsByTagName('script')[0];
-	s.parentNode.insertBefore(t, s);
-};
-	if ( typeof Primus !== 'undefined' ) {
-		listen();
-	} else {
-		inject();
-	}
-})();</script><script defer="defer"  src="/vendor/prism.js"></script><script defer="defer"  src="/vendor/zepto.min.js"></script>
-</head>
-<body>
-    <header class="header">
-    <div class="aside">
-        <a class="icon-container" href="/"><i class="icon ion-coffee"></i></a>
-
-    </div>
-    <h1>Mithril Sortable Table - Part 1</h1>
-    <hr>
-    <time datatime="2014-08-30T00:00:00.000Z" class="fggray">
-        Aug 30 2014
-    </time>
-    <div class="switch-toggle" onclick="toggleLang(event)">
-      <input id="js" name="lang" type="radio">
-      <label for="js">JS</label>
-
-      <input id="cs" name="lang" type="radio" checked>
-      <label for="cs">Coffee</label>
-
-      <a></a>
-    </div>
-</header>
-<main class="container post">
-    <article>
-        <p>The front end development world of javascript is full of frameworks. When developing a web application, it makes sense to build on top of a framework with a good community rather than try to reinvent the wheel. After eliminating opininated and complicated frameworks, I ended up using <a href="http://knockoutjs.com/" title="KnockoutJS">KnockoutJS</a>. It&#39;s a small two-way binding library with easy to use syntax that you can pick up in 5 minutes. However, it&#39;s not very efficient in dealing with arrays. After doing more research, I think frameworks that reduce or even eliminate DOM manipulation (since this is where most of the performance issues come from) by the programmer are the future. Currently, the popular technique to reduce DOM manipulation is virtual DOM diffing. And <a href="https://facebook.github.io/react/" title="React">React</a> is the most popular framework utilizing that technique. I encourage you to read a <a href="http://jlongster.com/Removing-User-Interface-Complexity,-or-Why-React-is-Awesome">post</a> by James Long to learn more about it. Then there are also a few other frameworks - <a href="http://www.ractivejs.org/" title="RactiveJS">RactiveJS</a>, <a href="https://github.com/Raynos/mercury" title="Mercury">Mercury</a>, and <a href="http://famo.us/" title="Famous">Famous</a>. I have decided that I am going to try to learn <a href="http://lhorie.github.io/mithril/" title="Mithril">Mithril</a>. It&#39;s very lightweight, has great performance benchmarks, and it encourages you to write better code (as opposed to opinionated code) and therefore be a better developer. And since it&#39;s so small and simple, I don&#39;t see future versions of it breaking the api. </p>
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title><![CDATA[Better With Coffee]]></title>
+        <description><![CDATA[Blog on web development]]></description>
+        <link>http://localhost:8080</link>
+        <generator>RSS for Node</generator>
+        <lastBuildDate>Wed, 03 Sep 2014 12:51:29 GMT</lastBuildDate>
+        <atom:link href="http://localhost:8080/rss.xml" rel="self" type="application/rss+xml"/>
+        <author><![CDATA[Vlad Fursa]]></author>
+        <pubDate>Wed, 03 Sep 2014 12:51:28 GMT</pubDate>
+        <item>
+            <title><![CDATA[Mithril Sortable Table - Part 1]]></title>
+            <description><![CDATA[<p>The front end development world of javascript is full of frameworks. When developing a web application, it makes sense to build on top of a framework with a good community rather than try to reinvent the wheel. After eliminating opininated and complicated frameworks, I ended up using <a href="http://knockoutjs.com/" title="KnockoutJS">KnockoutJS</a>. It&#39;s a small two-way binding library with easy to use syntax that you can pick up in 5 minutes. However, it&#39;s not very efficient in dealing with arrays. After doing more research, I think frameworks that reduce or even eliminate DOM manipulation (since this is where most of the performance issues come from) by the programmer are the future. Currently, the popular technique to reduce DOM manipulation is virtual DOM diffing. And <a href="https://facebook.github.io/react/" title="React">React</a> is the most popular framework utilizing that technique. I encourage you to read a <a href="http://jlongster.com/Removing-User-Interface-Complexity,-or-Why-React-is-Awesome">post</a> by James Long to learn more about it. Then there are also a few other frameworks - <a href="http://www.ractivejs.org/" title="RactiveJS">RactiveJS</a>, <a href="https://github.com/Raynos/mercury" title="Mercury">Mercury</a>, and <a href="http://famo.us/" title="Famous">Famous</a>. I have decided that I am going to try to learn <a href="http://lhorie.github.io/mithril/" title="Mithril">Mithril</a>. It&#39;s very lightweight, has great performance benchmarks, and it encourages you to write better code (as opposed to opinionated code) and therefore be a better developer. And since it&#39;s so small and simple, I don&#39;t see future versions of it breaking the api. </p>
 
 <h2>Starting Out</h2>
 
@@ -374,57 +306,11 @@ m.module document.getElementById(&quot;container&quot;), table
 <p><a href="http://jsfiddle.net/jjk8bxeq/9/">JSFiddle</a></p>
 
 <p>In part 2, we will add more columns, initial sort, and random data.</p>
-
-    </article>
-</main>
-<script >(function(){
-	/* Did we just livereload? */
-var log = !!(localStorage && console && console.log && true);
-if ( log && localStorage.getItem('/docpad-livereload/reloaded') === 'yes' ) {
-	localStorage.removeItem('/docpad-livereload/reloaded');
-	console.log('LiveReload completed at', new Date())
-}
-
-/* Listen for the regenerated event and perform a reload of the page when the event occurs */
-var listen = function(){
-	var primus = new Primus('/docpad-livereload');
-	primus.on('data', function(data){
-		if ( data && data.message ) {
-			if ( data.message === 'generateBefore' ) {
-				if ( log ) {
-					console.log('LiveReload started at', new Date());
-				}
-				if ( typeof document.getElementsByTagName !== 'undefined' ) {
-	document.getElementsByTagName('html')[0].className += ' wait';
-}
-			}
-			else if ( data.message === 'generateAfter' ) {
-				if ( log ) {
-					localStorage.setItem('/docpad-livereload/reloaded', 'yes');
-				}
-				document.location.reload();
-			}
-		}
-	});
-};
-	/* Inject socket into our page */
-var inject = function(){
-	var t = document.createElement('script');
-	t.type = 'text/javascript';
-	t.async = 'async';
-	t.src = '/primus/primus.js';
-	t.onload = listen;
-	var s = document.getElementsByTagName('script')[0];
-	s.parentNode.insertBefore(t, s);
-};
-	if ( typeof Primus !== 'undefined' ) {
-		listen();
-	} else {
-		inject();
-	}
-})();</script><script defer="defer"  src="/scripts/post1.js"></script>
-    <footer>
-        © 2014 Vlad Fursa. All Rights Reserved.
-    </footer>
-</body>
-</html>
+]]></description>
+            <link>http://localhost:8080/posts/mithril-sort-1.html</link>
+            <guid isPermaLink="true">http://localhost:8080/posts/mithril-sort-1.html</guid>
+            <dc:creator><![CDATA[Vlad Fursa]]></dc:creator>
+            <pubDate>Sat, 30 Aug 2014 00:00:00 GMT</pubDate>
+        </item>
+    </channel>
+</rss>

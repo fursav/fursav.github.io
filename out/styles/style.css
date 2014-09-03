@@ -79,6 +79,9 @@ a:hover {
 .hidden {
   visibility: hidden;
 }
+.inline {
+  display: inline-block;
+}
 .header {
   padding: 1em 10%;
   background: #333;
@@ -174,6 +177,7 @@ a:hover {
     margin: 0px;
     text-align: center;
     color: #777;
+    cursor: pointer;
     -webkit-transition: all 1s ease-out;
     -moz-transition: all 1s ease-out;
     transition: all 1s ease-out;
@@ -185,22 +189,19 @@ a:hover {
     color: #fff;
   }
 }
-/* Bugfix for older Webkit, including mobile Webkit. Adapted from
-* http://css-tricks.com/webkit-sibling-bug/
-*/
-@media only screen and (-webkit-max-device-pixel-ratio: 2) and (max-device-width: 1280px) {
-  .switch-light,
-  .switch-toggle {
-    -webkit-animation: webkitSiblingBugfix infinite 1s;
-  }
+.feed-link {
+  padding: 0 1em;
 }
-@-webkit-keyframes webkitSiblingBugfix {
-  from {
-    -webkit-transform: translate3d(0, 0, 0);
-  }
-  to {
-    -webkit-transform: translate3d(0, 0, 0);
-  }
+.feed-link .icon {
+  -webkit-transition: all 0.5s ease-out;
+  -moz-transition: all 0.5s ease-out;
+  transition: all 0.5s ease-out;
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+.feed-link .icon:hover {
+  color: #333;
 }
 @-moz-keyframes fadein {
   from {

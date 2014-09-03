@@ -6,6 +6,8 @@ docpadConfig = {
     templateData:
         site:
             title: "Better With Coffee"
+            description: "Blog on web development"
+            author: "Vlad Fursa"
         getPreparedTitle: -> if @document.title then "#{@document.title} | #{@site.title}" else @site.title
     collections:
         pages: ->
@@ -17,6 +19,9 @@ docpadConfig = {
         ghpages:
             deployRemote: 'origin'
             deployBranch: 'master'
+        rss:
+            default:
+                collection: 'posts'
 }
 
 # Export the DocPad Configuration

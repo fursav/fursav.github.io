@@ -7,7 +7,7 @@ layout: "default"
     <p class="subtitle marginless">Blog on web development</p>
 </header>
 <main class="container">
-    <h2 class="marginless fgred">Articles</h2>
+    <h2 class="inline marginless fgred">Articles</h2><a class="feed-link" href="rss.xml"><i class="icon ion-social-rss"></i></a>
     <hr>
     <% for page in @getCollection("posts").toJSON(): %>
         <article class="post--small">

@@ -5,10 +5,14 @@ $red = #ff2828
 $transition-speed = 1s
 $transition-ease = ease-out
 
-slide-button-transition(duration)
-  -webkit-transition: all duration ease-out;
-  -moz-transition: all duration ease-out;
-  transition: all duration ease-out;
+nice-transition(s,e)
+  -webkit-transition: all s e;
+  -moz-transition: all s e;
+  transition: all s e;
+  -webkit-transform: translate3d(0,0,0);
+  -moz-transform: translate3d(0,0,0);
+  transform: translate3d(0,0,0);
+
 
 
 // default elements
@@ -96,6 +100,9 @@ a:hover
 
 .hidden
   visibility hidden
+  
+.inline
+  display inline-block
 
 // components
 
@@ -193,41 +200,16 @@ a:hover
     margin: 0px;
     text-align: center;
     color #777
-    -webkit-transition: all $transition-speed $transition-ease;
-    -moz-transition: all $transition-speed $transition-ease;
-    transition: all $transition-speed $transition-ease;
-    -webkit-transform: translate3d(0,0,0);
-    -moz-transform: translate3d(0,0,0);
-    transform: translate3d(0,0,0);
+    cursor pointer
+    nice-transition($transition-speed,$transition-ease)
 
   .switch-toggle input:checked + label
-    // background: #555
     color #fff
-
-
-  // .switch-toggle input + label {
-  //   position: relative
-  //   top static
-  //   left static
-  //   right static
-  //   display inherit
-  //   width 50%
-  //   z-index 2
-  //   float: left;
-  //   height: 100%;
-  //   margin: 0;
-  //   text-align: center; }
-
-
-
-/* Bugfix for older Webkit, including mobile Webkit. Adapted from
-* http://css-tricks.com/webkit-sibling-bug/
-*/
-@media only screen and (-webkit-max-device-pixel-ratio: 2) and (max-device-width: 1280px) {
-    .switch-light, .switch-toggle {
-    -webkit-animation: webkitSiblingBugfix infinite 1s; } }
-@-webkit-keyframes webkitSiblingBugfix {
-  from {
-    -webkit-transform: translate3d(0, 0, 0); }
-  to {
-    -webkit-transform: translate3d(0, 0, 0); } }
+    
+.feed-link
+  padding 0 1em
+.feed-link .icon
+  nice-transition(.5s,$transition-ease)
+  
+.feed-link .icon:hover
+  color $black
