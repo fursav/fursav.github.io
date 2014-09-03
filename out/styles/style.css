@@ -14,15 +14,6 @@ body {
   text-rendering: optimizeLegibility;
   position: relative;
   min-height: 100vh;
-  -webkit-animation: fadein 1s;
-/* Safari, Chrome and Opera > 12.1 */
-  -moz-animation: fadein 1s;
-/* Firefox < 16 */
-  -ms-animation: fadein 1s;
-/* Internet Explorer */
-  -o-animation: fadein 1s;
-/* Opera < 12.1 */
-  animation: fadein 1s;
 }
 main {
   padding-bottom: 150px !important;
@@ -49,7 +40,7 @@ a:hover {
 /* Firefox < 16 */
 @-moz-keyframes fadein {
   from {
-    opacity: 0.6;
+    opacity: 0.5;
   }
   to {
     opacity: 1;
@@ -58,7 +49,7 @@ a:hover {
 /* Safari, Chrome and Opera > 12.1 */
 @-webkit-keyframes fadein {
   from {
-    opacity: 0.6;
+    opacity: 0.5;
   }
   to {
     opacity: 1;
@@ -67,7 +58,7 @@ a:hover {
 /* Opera < 12.1 */
 @-o-keyframes fadein {
   from {
-    opacity: 0.6;
+    opacity: 0.5;
   }
   to {
     opacity: 1;
@@ -165,9 +156,55 @@ a:hover {
   float: right;
   text-align: right;
 }
+@media only screen {
+  .switch-toggle {
+    height: 30px;
+    padding: 0 !important;
+    min-width: 150px;
+  }
+  .switch-toggle input {
+    position: absolute;
+    opacity: 0;
+  }
+  .switch-toggle label {
+    position: relative;
+    float: left;
+    width: 50%;
+    height: 100%;
+    margin: 0px;
+    text-align: center;
+    color: #777;
+    -webkit-transition: all 1s ease-out;
+    -moz-transition: all 1s ease-out;
+    transition: all 1s ease-out;
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+  .switch-toggle input:checked + label {
+    color: #fff;
+  }
+}
+/* Bugfix for older Webkit, including mobile Webkit. Adapted from
+* http://css-tricks.com/webkit-sibling-bug/
+*/
+@media only screen and (-webkit-max-device-pixel-ratio: 2) and (max-device-width: 1280px) {
+  .switch-light,
+  .switch-toggle {
+    -webkit-animation: webkitSiblingBugfix infinite 1s;
+  }
+}
+@-webkit-keyframes webkitSiblingBugfix {
+  from {
+    -webkit-transform: translate3d(0, 0, 0);
+  }
+  to {
+    -webkit-transform: translate3d(0, 0, 0);
+  }
+}
 @-moz-keyframes fadein {
   from {
-    opacity: 0.6;
+    opacity: 0.5;
   }
   to {
     opacity: 1;
@@ -175,7 +212,7 @@ a:hover {
 }
 @-webkit-keyframes fadein {
   from {
-    opacity: 0.6;
+    opacity: 0.5;
   }
   to {
     opacity: 1;
@@ -183,7 +220,7 @@ a:hover {
 }
 @-o-keyframes fadein {
   from {
-    opacity: 0.6;
+    opacity: 0.5;
   }
   to {
     opacity: 1;
@@ -191,7 +228,7 @@ a:hover {
 }
 @keyframes fadein {
   from {
-    opacity: 0.6;
+    opacity: 0.5;
   }
   to {
     opacity: 1;

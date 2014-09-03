@@ -6,5 +6,13 @@
     $("code.language-coffeescript").parent().hide()
     $("code.language-javascript").parent().show()
     return
-    
-@showCs()
+
+if $("#cs").attr("checked") then @showCs() else @showJs()
+
+@toggleLang = (e) =>
+    target = e.target
+    if target.id is "js"
+        @showJs()
+    else if target.id is "cs"
+        @showCs()
+    return

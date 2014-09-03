@@ -34,6 +34,35 @@ var table = {
 
 m.module(document.getElementById('container'), table); 
 ```
+```language-coffeescript
+table =
+  data: [
+    11
+    10
+    12
+  ]
+  header: ["item"]
+  controller: ->
+    @data = m.prop(table.data)
+    @header = m.prop(table.header)
+    return
+
+  view: (ctrl) ->
+    head = ctrl.header().map((item, index) ->
+      m "tr", [m("th",
+        class: "red"
+      , item)]
+    )
+    body = ctrl.data().map((item, index) ->
+      m "tr", [m("td", item)]
+    )
+    m "table", [
+      head
+      body
+    ]
+
+m.module document.getElementById("container"), table
+```
 [JSFiddle][10]
 
 Not very exciting. Let me point out a couple of things.
@@ -83,7 +112,48 @@ var table = {
 
 m.module(document.getElementById('container'), table);
 ```
+``` language-coffeescript
+table =
+  state: {}
+  data: [
+    {
+      value: 11
+    }
+    {
+      value: 10
+    }
+    {
+      value: 12
+    }
+  ]
+  header: [
+    display: "Value"
+    sortBy: "value"
+    sortType: "int"
+  ]
+  controller: ->
+    @data = m.prop(table.data)
+    @header = m.prop(table.header)
+    return
 
+  view: (ctrl) ->
+    head = ctrl.header().map((item, index) ->
+      m "tr", [m("th",
+        class: "red"
+        "data-sort-type": item.sortType
+        "data-sort-by": item.sortBy
+      , item.display)]
+    )
+    body = ctrl.data().map((item, index) ->
+      m "tr", [m("td", item.value)]
+    )
+    m "table", [
+      head
+      body
+    ]
+
+m.module document.getElementById("container"), table
+```
 We have added `sortBy` and `sortType` properties to the table header. We will be keeping track of which column is sorted by putting those properties in the `state` property of the table. Our `data` property in the table is now a list of objects rather than primitives.
 
 Rather than posting small code snippets here and there, I am going to go through the logic and then post the completed code. Start by adding onclick event handler `ctrl.handleTableClick` to the table element. We attach to the table itself rather than the individual headers because events in javascript propagate to the parent elements. In the handler function `ctrl.handleTableClick`, we can access the clicked html element through `event.target`. If the element clicked is a header, we then call `table.changeSortState`. This function updates the table state appropriately. It then calls the controller (which we pass in as a parameter) function `sortData`. Inside `sortData`, we access the table state to determine how to sort the data and then sort it appropriately. Once there is a change in controller data, Mithril will update our view (after the controller has finished running all of its code).
@@ -155,6 +225,78 @@ var table = {
 }
 
 m.module(document.getElementById('container'), table);
+```
+``` language-coffeescript
+table =
+  state: {}
+  data: [
+    {
+      value: 11
+    }
+    {
+      value: 10
+    }
+    {
+      value: 12
+    }
+  ]
+  header: [
+    display: "Value"
+    sortBy: "value"
+    sortType: "int"
+  ]
+  changeSortState: (sortBy, sortType, ctrl) ->
+    table.state.sort = {}  if not table.state.sort?
+    table.state.sort.sortBy = sortBy
+    table.state.sort.sortType = sortType
+    if table.state.sort.sortDir is "asc"
+      table.state.sort.sortDir = "des"
+    else
+      table.state.sort.sortDir = "asc"
+    ctrl.sortData()
+    return
+
+  controller: ->
+    @data = m.prop(table.data)
+    @header = m.prop(table.header)
+    @sortData = ->
+      sortValues =
+        asc: 1
+        des: -1
+
+      sortMult = sortValues[table.state.sort.sortDir]
+      @data().sort (a, b) ->
+        sortMult * (a[table.state.sort.sortBy] - b[table.state.sort.sortBy])
+
+      return
+
+    @handleTableClick = ((e) ->
+      sortType = e.target.getAttribute("data-sort-type")
+      sortBy = e.target.getAttribute("data-sort-by")
+      table.changeSortState(sortBy, sortType, this)  if sortBy and sortType
+      return
+    ).bind(this)
+    return
+
+  view: (ctrl) ->
+    head = ctrl.header().map((item, index) ->
+      m "tr", [m("th.clickable",
+        class: "red"
+        "data-sort-type": item.sortType
+        "data-sort-by": item.sortBy
+      , item.display)]
+    )
+    body = ctrl.data().map((item, index) ->
+      m "tr", [m("td", item.value)]
+    )
+    m "table",
+      onclick: ctrl.handleTableClick
+    , [
+      head
+      body
+    ]
+
+m.module document.getElementById("container"), table
 ```
 [JSFiddle][13]
 

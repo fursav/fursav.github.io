@@ -1,6 +1,5 @@
 ---
 layout: "default"
-scripts: "/scripts/post1.js"
 ---
 <header class="header">
     <div class="aside">
@@ -12,13 +11,13 @@ scripts: "/scripts/post1.js"
     <time datatime="<%= @document.date.toISOString() %>" class="fggray">
         <%= @document.date.toDateString().split(" ").slice(1).join(" ") %>
     </time>
-    <div class="switch-toggle">
+    <div class="switch-toggle" onclick="toggleLang(event)">
       <input id="js" name="lang" type="radio">
-      <label for="js" onclick="showJs()">JS</label>
-    
+      <label for="js">JS</label>
+
       <input id="cs" name="lang" type="radio" checked>
-      <label for="cs" onclick="showCs()">Coffee</label>
-    
+      <label for="cs">Coffee</label>
+
       <a></a>
     </div>
 </header>
@@ -27,3 +26,4 @@ scripts: "/scripts/post1.js"
         <%- @content %>
     </article>
 </main>
+<%- @getBlock("scripts").add(["/scripts/post1.js"]).toHTML()%>

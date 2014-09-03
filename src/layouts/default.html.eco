@@ -5,12 +5,12 @@
     <%- @getBlock("meta").toHTML() %>
     <%- @getBlock("styles").add(["/vendor/normalize.min.css","/vendor/prism.css","//brick.a.ssl.fastly.net/Clear+Sans:400,700,400i,700i","/vendor/ionicons.min.css","/styles/style.css"]).toHTML() %>
 
+    <%- @getBlock("scripts").add(["/vendor/prism.js","/vendor/zepto.min.js"]).add(@document.scripts or []).toHTML() %>
 </head>
 <body>
     <%- @content %>
     <footer>
         © 2014 Vlad Fursa. All Rights Reserved.
     </footer>
-    <%- @getBlock("scripts").add(["/vendor/prism.js","/vendor/zepto.min.js"]).add(@site.scripts or []).add(@document.scripts or []).toHTML() %>
 </body>
 </html>

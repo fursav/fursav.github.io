@@ -9,6 +9,52 @@
 	transition: opacity 0.5s ease;
 }</style><link  rel="stylesheet" href="/vendor/normalize.min.css" /><link  rel="stylesheet" href="/vendor/prism.css" /><link  rel="stylesheet" href="//brick.a.ssl.fastly.net/Clear+Sans:400,700,400i,700i" /><link  rel="stylesheet" href="/vendor/ionicons.min.css" /><link  rel="stylesheet" href="/styles/style.css" />
 
+    <script >(function(){
+	/* Did we just livereload? */
+var log = !!(localStorage && console && console.log && true);
+if ( log && localStorage.getItem('/docpad-livereload/reloaded') === 'yes' ) {
+	localStorage.removeItem('/docpad-livereload/reloaded');
+	console.log('LiveReload completed at', new Date())
+}
+
+/* Listen for the regenerated event and perform a reload of the page when the event occurs */
+var listen = function(){
+	var primus = new Primus('/docpad-livereload');
+	primus.on('data', function(data){
+		if ( data && data.message ) {
+			if ( data.message === 'generateBefore' ) {
+				if ( log ) {
+					console.log('LiveReload started at', new Date());
+				}
+				if ( typeof document.getElementsByTagName !== 'undefined' ) {
+	document.getElementsByTagName('html')[0].className += ' wait';
+}
+			}
+			else if ( data.message === 'generateAfter' ) {
+				if ( log ) {
+					localStorage.setItem('/docpad-livereload/reloaded', 'yes');
+				}
+				document.location.reload();
+			}
+		}
+	});
+};
+	/* Inject socket into our page */
+var inject = function(){
+	var t = document.createElement('script');
+	t.type = 'text/javascript';
+	t.async = 'async';
+	t.src = '/primus/primus.js';
+	t.onload = listen;
+	var s = document.getElementsByTagName('script')[0];
+	s.parentNode.insertBefore(t, s);
+};
+	if ( typeof Primus !== 'undefined' ) {
+		listen();
+	} else {
+		inject();
+	}
+})();</script><script defer="defer"  src="/vendor/prism.js"></script><script defer="defer"  src="/vendor/zepto.min.js"></script>
 </head>
 <body>
     <header class="header">
@@ -19,15 +65,15 @@
     <h1>Mithril Sortable Table - Part 1</h1>
     <hr>
     <time datatime="2014-08-30T00:00:00.000Z" class="fggray">
-        Aug 30 2014
+        Aug 29 2014
     </time>
-    <div class="switch-toggle">
+    <div class="switch-toggle" onclick="toggleLang(event)">
       <input id="js" name="lang" type="radio">
-      <label for="js" onclick="showJs()">JS</label>
-    
+      <label for="js">JS</label>
+
       <input id="cs" name="lang" type="radio" checked>
-      <label for="cs" onclick="showCs()">Coffee</label>
-    
+      <label for="cs">Coffee</label>
+
       <a></a>
     </div>
 </header>
@@ -60,6 +106,35 @@
 }
 
 m.module(document.getElementById(&#39;container&#39;), table); 
+</code></pre>
+
+<pre><code class="language-coffeescript">table =
+  data: [
+    11
+    10
+    12
+  ]
+  header: [&quot;item&quot;]
+  controller: -&gt;
+    @data = m.prop(table.data)
+    @header = m.prop(table.header)
+    return
+
+  view: (ctrl) -&gt;
+    head = ctrl.header().map((item, index) -&gt;
+      m &quot;tr&quot;, [m(&quot;th&quot;,
+        class: &quot;red&quot;
+      , item)]
+    )
+    body = ctrl.data().map((item, index) -&gt;
+      m &quot;tr&quot;, [m(&quot;td&quot;, item)]
+    )
+    m &quot;table&quot;, [
+      head
+      body
+    ]
+
+m.module document.getElementById(&quot;container&quot;), table
 </code></pre>
 
 <p><a href="http://jsfiddle.net/jjk8bxeq/5/">JSFiddle</a></p>
@@ -108,6 +183,48 @@ m.module(document.getElementById(&#39;container&#39;), table);
 }
 
 m.module(document.getElementById(&#39;container&#39;), table);
+</code></pre>
+
+<pre><code class="language-coffeescript">table =
+  state: {}
+  data: [
+    {
+      value: 11
+    }
+    {
+      value: 10
+    }
+    {
+      value: 12
+    }
+  ]
+  header: [
+    display: &quot;Value&quot;
+    sortBy: &quot;value&quot;
+    sortType: &quot;int&quot;
+  ]
+  controller: -&gt;
+    @data = m.prop(table.data)
+    @header = m.prop(table.header)
+    return
+
+  view: (ctrl) -&gt;
+    head = ctrl.header().map((item, index) -&gt;
+      m &quot;tr&quot;, [m(&quot;th&quot;,
+        class: &quot;red&quot;
+        &quot;data-sort-type&quot;: item.sortType
+        &quot;data-sort-by&quot;: item.sortBy
+      , item.display)]
+    )
+    body = ctrl.data().map((item, index) -&gt;
+      m &quot;tr&quot;, [m(&quot;td&quot;, item.value)]
+    )
+    m &quot;table&quot;, [
+      head
+      body
+    ]
+
+m.module document.getElementById(&quot;container&quot;), table
 </code></pre>
 
 <p>We have added <code>sortBy</code> and <code>sortType</code> properties to the table header. We will be keeping track of which column is sorted by putting those properties in the <code>state</code> property of the table. Our <code>data</code> property in the table is now a list of objects rather than primitives.</p>
@@ -182,16 +299,85 @@ m.module(document.getElementById(&#39;container&#39;), table);
 m.module(document.getElementById(&#39;container&#39;), table);
 </code></pre>
 
+<pre><code class="language-coffeescript">table =
+  state: {}
+  data: [
+    {
+      value: 11
+    }
+    {
+      value: 10
+    }
+    {
+      value: 12
+    }
+  ]
+  header: [
+    display: &quot;Value&quot;
+    sortBy: &quot;value&quot;
+    sortType: &quot;int&quot;
+  ]
+  changeSortState: (sortBy, sortType, ctrl) -&gt;
+    table.state.sort = {}  if not table.state.sort?
+    table.state.sort.sortBy = sortBy
+    table.state.sort.sortType = sortType
+    if table.state.sort.sortDir is &quot;asc&quot;
+      table.state.sort.sortDir = &quot;des&quot;
+    else
+      table.state.sort.sortDir = &quot;asc&quot;
+    ctrl.sortData()
+    return
+
+  controller: -&gt;
+    @data = m.prop(table.data)
+    @header = m.prop(table.header)
+    @sortData = -&gt;
+      sortValues =
+        asc: 1
+        des: -1
+
+      sortMult = sortValues[table.state.sort.sortDir]
+      @data().sort (a, b) -&gt;
+        sortMult * (a[table.state.sort.sortBy] - b[table.state.sort.sortBy])
+
+      return
+
+    @handleTableClick = ((e) -&gt;
+      sortType = e.target.getAttribute(&quot;data-sort-type&quot;)
+      sortBy = e.target.getAttribute(&quot;data-sort-by&quot;)
+      table.changeSortState(sortBy, sortType, this)  if sortBy and sortType
+      return
+    ).bind(this)
+    return
+
+  view: (ctrl) -&gt;
+    head = ctrl.header().map((item, index) -&gt;
+      m &quot;tr&quot;, [m(&quot;th.clickable&quot;,
+        class: &quot;red&quot;
+        &quot;data-sort-type&quot;: item.sortType
+        &quot;data-sort-by&quot;: item.sortBy
+      , item.display)]
+    )
+    body = ctrl.data().map((item, index) -&gt;
+      m &quot;tr&quot;, [m(&quot;td&quot;, item.value)]
+    )
+    m &quot;table&quot;,
+      onclick: ctrl.handleTableClick
+    , [
+      head
+      body
+    ]
+
+m.module document.getElementById(&quot;container&quot;), table
+</code></pre>
+
 <p><a href="http://jsfiddle.net/jjk8bxeq/9/">JSFiddle</a></p>
 
 <p>In part 2, we will add more columns, initial sort, and random data.</p>
 
     </article>
 </main>
-    <footer>
-        © 2014 Vlad Fursa. All Rights Reserved.
-    </footer>
-    <script >(function(){
+<script >(function(){
 	/* Did we just livereload? */
 var log = !!(localStorage && console && console.log && true);
 if ( log && localStorage.getItem('/docpad-livereload/reloaded') === 'yes' ) {
@@ -236,6 +422,9 @@ var inject = function(){
 	} else {
 		inject();
 	}
-})();</script><script defer="defer"  src="/vendor/prism.js"></script><script defer="defer"  src="/vendor/zepto.min.js"></script><script defer="defer"  src="/scripts/post1.js"></script>
+})();</script><script defer="defer"  src="/scripts/post1.js"></script>
+    <footer>
+        © 2014 Vlad Fursa. All Rights Reserved.
+    </footer>
 </body>
 </html>

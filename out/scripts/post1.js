@@ -9,6 +9,22 @@
     $("code.language-javascript").parent().show();
   };
 
-  this.showCs();
+  if ($("#cs").attr("checked")) {
+    this.showCs();
+  } else {
+    this.showJs();
+  }
+
+  this.toggleLang = (function(_this) {
+    return function(e) {
+      var target;
+      target = e.target;
+      if (target.id === "js") {
+        _this.showJs();
+      } else if (target.id === "cs") {
+        _this.showCs();
+      }
+    };
+  })(this);
 
 }).call(this);
