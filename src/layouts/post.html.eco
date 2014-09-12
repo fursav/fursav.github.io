@@ -17,11 +17,14 @@ layout: "default"
 
       <input id="cs" name="lang" type="radio" checked>
       <label for="cs">Coffee</label>
-
-      <a></a>
     </div>
 </header>
 <main class="container post">
+    <% if @document.note: %>
+        <div>
+            <%- @document.note %>
+        </div>
+    <% end %>
     <article>
         <%- @content %>
     </article>
