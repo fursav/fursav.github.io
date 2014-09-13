@@ -3,12 +3,312 @@
     <channel>
         <title><![CDATA[Better With Coffee]]></title>
         <description><![CDATA[Blog on web development]]></description>
-        <link>http://localhost:8080</link>
+        <link>http://localhost:9778</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Fri, 12 Sep 2014 00:56:05 GMT</lastBuildDate>
-        <atom:link href="http://localhost:8080/rss.xml" rel="self" type="application/rss+xml"/>
+        <lastBuildDate>Sat, 13 Sep 2014 14:33:52 GMT</lastBuildDate>
+        <atom:link href="http://localhost:9778/rss.xml" rel="self" type="application/rss+xml"/>
         <author><![CDATA[Vlad Fursa]]></author>
-        <pubDate>Fri, 12 Sep 2014 00:55:15 GMT</pubDate>
+        <pubDate>Sat, 13 Sep 2014 14:33:47 GMT</pubDate>
+        <item>
+            <title><![CDATA[Mithril Sortable Table - Part 2]]></title>
+            <description><![CDATA[<p>In <a href="mithril-sort-1.html" title="Part 1">Part 1</a>, we created a single column sortable table. In this post, we will add visiual feedback for sort state, implement initial sort, and add more columns.</p>
+
+<h2>Sort Indicator</h2>
+
+<p>I have refactored the code to be a little more clear. Let&#39;s start improving the table by making a visual distiction between sort states. Currently, the header class is just <code>red</code>. Let&#39;s replace that with a function that returns appropriate css class based on the table state.</p>
+
+<pre><code class="language-javascript">this.getHeaderClasses = function (item) {
+    if (table.state.sort.sortKey === item.key) {
+        return table.state.sort.sortDir;
+    }
+    return &quot;&quot;;
+};
+</code></pre>
+
+<pre><code class="language-coffeescript">@getHeaderClasses = (item) -&gt;
+  return table.state.sort.sortDir  if table.state.sort.sortKey is item.key
+  return &quot;&quot;
+</code></pre>
+
+<p>This function takes in an item we define in the <code>header</code> array of the table and returns a css class (<code>asc</code> or <code>des</code>) if the table is sorted by the key corresponding the header/column.</p>
+
+<p><a href="http://jsfiddle.net/jjk8bxeq/20/">JSFiddle</a></p>
+
+<h2>Initial Sort</h2>
+
+<p>Let&#39;s try adding initial sort. A quick glance at the code could lead us to believe that all we need to do is fill in <code>sortKey</code> and <code>sortDir</code> in the state of the table to have our table intially sorted. Unfortunately, that doesn&#39;t work. We need to add a <code>sortData()</code> call inside our controller. However, that&#39;s not a bad practice that could easily lead to problems down the road. So let&#39;s refactor our code so that we don&#39;t have to manually invoke the sort at all.</p>
+
+<p>Let&#39;s get rid of <code>controller.sortData</code> function and all references to it. Next let&#39;s replace <code>controller.data = m.prop(table.data)</code> with a function</p>
+
+<pre><code class="language-javascript">this.data = function () {
+    var state = table.state.sort;
+    var sortValues = {
+        asc: 1,
+        des: -1
+    };
+    var sortMult = sortValues[state.sortDir];
+    return table.data.sort(function (a, b) {
+        aVal = a[state.sortKey];
+        bVal = b[state.sortKey];
+        // if aVal equals bVal
+        result = 0;
+        if (aVal &gt; bVal)
+            result = 1;
+        else if (aVal &lt; bVal)
+            result = -1;
+        return sortMult * result;
+    });
+};
+</code></pre>
+
+<pre><code class="language-coffeescript">@data = -&gt;
+  state = table.state.sort
+  sortValues =
+    asc: 1
+    des: -1
+
+  sortMult = sortValues[state.sortDir]
+  return table.data.sort (a, b) -&gt;
+    aVal = a[state.sortKey]
+    bVal = b[state.sortKey]
+
+    # if aVal equals bVal
+    result = 0
+    if aVal &gt; bVal
+      result = 1
+    else result = -1  if aVal &lt; bVal
+    return sortMult * result
+
+</code></pre>
+
+<p>Essentialy, we have merged the sorting functionality with the retrieval of the data. Now, whenever our state updates, our data will be immediately resorted and our view will be automatically updated.</p>
+
+<p><a href="http://jsfiddle.net/jjk8bxeq/21/">JSFiddle</a></p>
+
+<h2>More Columns</h2>
+
+<p>A single column table is not exactly a great achievement in web development. Once again by glancing at the code, we might think that in order to add more columns, we just need to add another item to the <code>header</code> and <code>data</code> lists of the table. Unfortunately, our view is structured to only present one column right now. Let&#39;s refactor <code>view.body</code></p>
+
+<pre><code class="language-javascript">var body = ctrl.data().map(function(item, index) {
+    return m(&quot;tr&quot;, ctrl.header().map(function(header) {
+        return m(&quot;td&quot;, item[header.key]);
+    }));
+});
+</code></pre>
+
+<pre><code class="language-coffeescript">body = ctrl.data().map((item, index) -&gt;
+  m(&quot;tr&quot;, ctrl.header().map((header) -&gt;
+    m(&quot;td&quot;, item[header.key])
+  ))
+)
+</code></pre>
+
+<p>Instead of manually defining which key we want to display in which position, we iterate over the table header and use the key that corresponds to the column. </p>
+
+<p>Now we are ready to add more data and columns. I added names to our data but you are obviously free to add anything you want. And since we layed down a good foundation, we don&#39;t have to modify our code for the sorting to work on the new column.</p>
+
+<pre><code class="language-javascript">var table = {
+    state: {
+        sort: {
+            sortKey: &quot;value&quot;,
+            sortDir: &quot;des&quot;
+        }
+    },
+    data: [{
+        name: &quot;John Smith&quot;,
+        value: 11
+    }, {
+        name: &quot;James Henry&quot;,
+        value: 10
+    }, {
+        name: &quot;Sam Johnson&quot;,
+        value: 12
+    }],
+    header: [{
+        label: &quot;Name&quot;,
+        key: &quot;name&quot;,
+        sortType: &quot;string&quot;
+    }, {
+        label: &quot;Value&quot;,
+        key: &quot;value&quot;,
+        sortType: &quot;int&quot;
+    }],
+    changeSortState: function (sortKey, sortType) {
+        if (table.state.sort === null || table.state.sort === undefined) {
+            table.state.sort = {};
+        }
+        table.state.sort.sortKey = sortKey;
+        table.state.sort.sortType = sortType;
+        if (table.state.sort.sortDir === &quot;asc&quot;) {
+            table.state.sort.sortDir = &quot;des&quot;;
+        } else {
+            table.state.sort.sortDir = &quot;asc&quot;;
+        }
+    },
+    controller: function () {
+        this.data = function () {
+            var state = table.state.sort;
+            var sortValues = {
+                asc: 1,
+                des: -1
+            };
+            var sortMult = sortValues[state.sortDir];
+            return table.data.sort(function (a, b) {
+                aVal = a[state.sortKey];
+                bVal = b[state.sortKey];
+                // if aVal equals bVal
+                result = 0;
+                if (aVal &gt; bVal)
+                    result = 1;
+                else if (aVal &lt; bVal)
+                    result = -1;
+                return sortMult * result;
+            });
+        };
+        this.header = m.prop(table.header);
+        this.handleTableClick = function (e) {
+            var sortType = e.target.getAttribute(&quot;data-sort-type&quot;);
+            var sortKey = e.target.getAttribute(&quot;data-sort-key&quot;);
+            if (sortKey &amp;&amp; sortType) {
+                table.changeSortState(sortKey, sortType);
+            }
+        };
+    },
+    view: function (ctrl) {
+        this.getHeaderClasses = function (item) {
+            if (table.state.sort.sortKey === item.key) {
+                return table.state.sort.sortDir;
+            }
+            return &quot;&quot;;
+        };
+        var head = m(&quot;tr&quot;, ctrl.header().map(function (item, index) {
+            return m(&quot;th.clickable&quot;, {
+                class: this.getHeaderClasses(item),
+                &quot;data-sort-type&quot;: item.sortType,
+                &quot;data-sort-key&quot;: item.key
+            }, item.label);
+        }.bind(this)));
+        var body = ctrl.data().map(function (item, index) {
+            return m(&quot;tr&quot;, ctrl.header().map(function (header) {
+                return m(&quot;td&quot;, item[header.key]);
+            }));
+        });
+        return m(&quot;table&quot;, {
+            onclick: ctrl.handleTableClick
+        }, [head, body]);
+    }
+};
+
+m.module(document.getElementById(&#39;container&#39;), table);
+</code></pre>
+
+<pre><code class="language-coffeescript">table =
+  state:
+    sort:
+      sortKey: &quot;value&quot;
+      sortDir: &quot;des&quot;
+
+  data: [
+    {
+      name: &quot;John Smith&quot;
+      value: 11
+    }
+    {
+      name: &quot;James Henry&quot;
+      value: 10
+    }
+    {
+      name: &quot;Sam Johnson&quot;
+      value: 12
+    }
+  ]
+  header: [
+    {
+      label: &quot;Name&quot;
+      key: &quot;name&quot;
+      sortType: &quot;string&quot;
+    }
+    {
+      label: &quot;Value&quot;
+      key: &quot;value&quot;
+      sortType: &quot;int&quot;
+    }
+  ]
+  changeSortState: (sortKey, sortType) -&gt;
+    table.state.sort = {}  if not table.state.sort?
+    table.state.sort.sortKey = sortKey
+    table.state.sort.sortType = sortType
+    if table.state.sort.sortDir is &quot;asc&quot;
+      table.state.sort.sortDir = &quot;des&quot;
+    else
+      table.state.sort.sortDir = &quot;asc&quot;
+    return
+
+  controller: -&gt;
+    @data = -&gt;
+      state = table.state.sort
+      sortValues =
+        asc: 1
+        des: -1
+
+      sortMult = sortValues[state.sortDir]
+      return table.data.sort (a, b) -&gt;
+        aVal = a[state.sortKey]
+        bVal = b[state.sortKey]
+
+        # if aVal equals bVal
+        result = 0
+        if aVal &gt; bVal
+          result = 1
+        else result = -1  if aVal &lt; bVal
+        return sortMult * result
+
+
+    @header = m.prop(table.header)
+    @handleTableClick = (e) -&gt;
+      sortType = e.target.getAttribute(&quot;data-sort-type&quot;)
+      sortKey = e.target.getAttribute(&quot;data-sort-key&quot;)
+      table.changeSortState sortKey, sortType  if sortKey and sortType
+      return
+    return
+
+  view: (ctrl) -&gt;
+    @getHeaderClasses = (item) -&gt;
+      return table.state.sort.sortDir  if table.state.sort.sortKey is item.key
+      return &quot;&quot;
+
+    head = m(&quot;tr&quot;, ctrl.header().map(((item, index) -&gt;
+      m(&quot;th.clickable&quot;,
+        class: @getHeaderClasses(item)
+        &quot;data-sort-type&quot;: item.sortType
+        &quot;data-sort-key&quot;: item.key
+      , item.label)
+    ).bind(this)))
+    body = ctrl.data().map((item, index) -&gt;
+      m(&quot;tr&quot;, ctrl.header().map((header) -&gt;
+        m(&quot;td&quot;, item[header.key])
+      ))
+    )
+    m(&quot;table&quot;,
+      onclick: ctrl.handleTableClick
+    , [
+      head
+      body
+    ]
+    )
+
+m.module document.getElementById(&quot;container&quot;), table
+</code></pre>
+
+<p><a href="http://jsfiddle.net/jjk8bxeq/23/">JSFiddle</a></p>
+
+<p>In Part 3, we will add a computed column and allow the user to randomize the data.</p>
+]]></description>
+            <link>http://localhost:9778/posts/mithril-sort-2.html</link>
+            <guid isPermaLink="true">http://localhost:9778/posts/mithril-sort-2.html</guid>
+            <dc:creator><![CDATA[Vlad Fursa]]></dc:creator>
+            <pubDate>Fri, 12 Sep 2014 00:00:00 GMT</pubDate>
+        </item>
         <item>
             <title><![CDATA[Mithril Sortable Table - Part 1]]></title>
             <description><![CDATA[<p>The front end development world of javascript is full of frameworks. When developing a web application, it makes sense to build on top of a framework with a good community rather than try to reinvent the wheel. After eliminating opininated and complicated frameworks, I ended up using <a href="http://knockoutjs.com/" title="KnockoutJS">KnockoutJS</a>. It&#39;s a small two-way binding library with easy to use syntax that you can pick up in 5 minutes. However, it&#39;s not very efficient in dealing with arrays. After doing more research, I think frameworks that reduce or even eliminate DOM manipulation (since this is where most of the performance issues come from) by the programmer are the future. Currently, the popular technique to reduce DOM manipulation is virtual DOM diffing. And <a href="https://facebook.github.io/react/" title="React">React</a> is the most popular framework utilizing that technique. I encourage you to read a <a href="http://jlongster.com/Removing-User-Interface-Complexity,-or-Why-React-is-Awesome">post</a> by James Long to learn more about it. Then there are also a few other frameworks - <a href="http://www.ractivejs.org/" title="RactiveJS">RactiveJS</a>, <a href="https://github.com/Raynos/mercury" title="Mercury">Mercury</a>, and <a href="http://famo.us/" title="Famous">Famous</a>. I have decided that I am going to try to learn <a href="http://lhorie.github.io/mithril/" title="Mithril">Mithril</a>. It&#39;s very lightweight, has great performance benchmarks, and it encourages you to write better code (as opposed to opinionated code) and therefore be a better developer. And since it&#39;s so small and simple, I don&#39;t see future versions of it breaking the api. </p>
@@ -305,10 +605,10 @@ m.module document.getElementById(&quot;container&quot;), table
 
 <p><a href="http://jsfiddle.net/jjk8bxeq/9/">JSFiddle</a></p>
 
-<p>In part 2, we will add more columns, initial sort, and random data.</p>
+<p>In part 2, we will add more columns, and initial sort.</p>
 ]]></description>
-            <link>http://localhost:8080/posts/mithril-sort-1.html</link>
-            <guid isPermaLink="true">http://localhost:8080/posts/mithril-sort-1.html</guid>
+            <link>http://localhost:9778/posts/mithril-sort-1.html</link>
+            <guid isPermaLink="true">http://localhost:9778/posts/mithril-sort-1.html</guid>
             <dc:creator><![CDATA[Vlad Fursa]]></dc:creator>
             <pubDate>Sat, 30 Aug 2014 00:00:00 GMT</pubDate>
         </item>
