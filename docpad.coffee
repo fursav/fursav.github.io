@@ -13,7 +13,7 @@ docpadConfig = {
         pages: ->
             @getCollection("html").findAll({isPage:true})
         posts: ->
-            @getCollection('documents').findAllLive({relativeOutDirPath:'posts'}).on "add", (model) ->
+            @getCollection('documents').findAllLive({relativeOutDirPath:'posts'},[{date:-1}]).on "add", (model) ->
                 model.setMetaDefaults({layout:"post"})
     plugins:
         ghpages:

@@ -32,6 +32,7 @@ body
   text-rendering optimizeLegibility
   position relative
   min-height 100vh
+  line-height 2rem
   // -webkit-animation: fadein 1.5s; /* Safari, Chrome and Opera > 12.1 */
   //  -moz-animation: fadein 1.5s; /* Firefox < 16 */
   //   -ms-animation: fadein 1.5s; /* Internet Explorer */
@@ -100,7 +101,7 @@ a:hover
 
 .hidden
   visibility hidden
-  
+
 .inline
   display inline-block
 
@@ -205,11 +206,11 @@ a:hover
 
   .switch-toggle input:checked + label
     color #fff
-    
+
 .feed-link
   padding 0 1em
 .feed-link .icon
   nice-transition(.5s,$transition-ease)
-  
+
 .feed-link .icon:hover
   color $black

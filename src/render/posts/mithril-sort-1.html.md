@@ -300,7 +300,7 @@ m.module document.getElementById("container"), table
 ```
 [JSFiddle][13]
 
-In part 2, we will add more columns, initial sort, and random data.
+In part 2, we will add more columns, and initial sort.
 
 [1]: http://knockoutjs.com/ "KnockoutJS"
 [2]: https://facebook.github.io/react/ "React"
