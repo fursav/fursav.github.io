@@ -19,6 +19,11 @@ this.getHeaderClasses = function (item) {
     return "";
 };
 ```
+``` language-coffeescript
+@getHeaderClasses = (item) ->
+  return table.state.sort.sortDir  if table.state.sort.sortKey is item.key
+  return ""
+```
 
 This function takes in an item we define in the `header` array of the table and returns a css class (`asc` or `des`) if the table is sorted by the key corresponding the header/column.
 
@@ -38,7 +43,7 @@ this.data = function () {
         asc: 1,
         des: -1
     };
-    var sortMult = sortValues[table.state.sort.sortDir];
+    var sortMult = sortValues[state.sortDir];
     return table.data.sort(function (a, b) {
         aVal = a[state.sortKey];
         bVal = b[state.sortKey];
@@ -52,7 +57,26 @@ this.data = function () {
     });
 };
 ```
+``` language-coffeescript
+@data = ->
+  state = table.state.sort
+  sortValues =
+    asc: 1
+    des: -1
 
+  sortMult = sortValues[state.sortDir]
+  return table.data.sort (a, b) ->
+    aVal = a[state.sortKey]
+    bVal = b[state.sortKey]
+    
+    # if aVal equals bVal
+    result = 0
+    if aVal > bVal
+      result = 1
+    else result = -1  if aVal < bVal
+    return sortMult * result
+
+```
 Essentialy, we have merged the sorting functionality with the retrieval of the data. Now, whenever our state updates, our data will be immediately resorted and our view will be automatically updated.
 
 [JSFiddle][3]
@@ -69,10 +93,17 @@ var body = ctrl.data().map(function(item, index) {
     }));
 });
 ```
+``` language-coffeescript
+body = ctrl.data().map((item, index) ->
+  m("tr", ctrl.header().map((header) ->
+    m("td", item[header.key])
+  ))
+)
+```
 
 Instead of manually defining which key we want to display in which position, we iterate over the table header and use the key that corresponds to the column. 
 
-Now we are ready to add more data and columns. I added names to our data but you are obviously free to add anything you want. And happily, we don't have to modify our code for the sorting to work on the new column.
+Now we are ready to add more data and columns. I added names to our data but you are obviously free to add anything you want. And since we layed down a good foundation, we don't have to modify our code for the sorting to work on the new column.
 
 ``` language-javascript
 var table = {
@@ -120,7 +151,7 @@ var table = {
                 asc: 1,
                 des: -1
             };
-            var sortMult = sortValues[table.state.sort.sortDir];
+            var sortMult = sortValues[state.sortDir];
             return table.data.sort(function (a, b) {
                 aVal = a[state.sortKey];
                 bVal = b[state.sortKey];
@@ -140,7 +171,7 @@ var table = {
             if (sortKey && sortType) {
                 table.changeSortState(sortKey, sortType);
             }
-        }.bind(this);
+        };
     },
     view: function (ctrl) {
         this.getHeaderClasses = function (item) {
@@ -168,6 +199,104 @@ var table = {
 };
 
 m.module(document.getElementById('container'), table);
+```
+``` language-coffeescript
+table =
+  state:
+    sort:
+      sortKey: "value"
+      sortDir: "des"
+
+  data: [
+    {
+      name: "John Smith"
+      value: 11
+    }
+    {
+      name: "James Henry"
+      value: 10
+    }
+    {
+      name: "Sam Johnson"
+      value: 12
+    }
+  ]
+  header: [
+    {
+      label: "Name"
+      key: "name"
+      sortType: "string"
+    }
+    {
+      label: "Value"
+      key: "value"
+      sortType: "int"
+    }
+  ]
+  changeSortState: (sortKey, sortType) ->
+    table.state.sort = {}  if not table.state.sort?
+    table.state.sort.sortKey = sortKey
+    table.state.sort.sortType = sortType
+    if table.state.sort.sortDir is "asc"
+      table.state.sort.sortDir = "des"
+    else
+      table.state.sort.sortDir = "asc"
+    return
+
+  controller: ->
+    @data = ->
+      state = table.state.sort
+      sortValues =
+        asc: 1
+        des: -1
+
+      sortMult = sortValues[state.sortDir]
+      return table.data.sort (a, b) ->
+        aVal = a[state.sortKey]
+        bVal = b[state.sortKey]
+        
+        # if aVal equals bVal
+        result = 0
+        if aVal > bVal
+          result = 1
+        else result = -1  if aVal < bVal
+        return sortMult * result
+
+
+    @header = m.prop(table.header)
+    @handleTableClick = (e) ->
+      sortType = e.target.getAttribute("data-sort-type")
+      sortKey = e.target.getAttribute("data-sort-key")
+      table.changeSortState sortKey, sortType  if sortKey and sortType
+      return
+    return
+
+  view: (ctrl) ->
+    @getHeaderClasses = (item) ->
+      return table.state.sort.sortDir  if table.state.sort.sortKey is item.key
+      return ""
+
+    head = m("tr", ctrl.header().map(((item, index) ->
+      m("th.clickable",
+        class: @getHeaderClasses(item)
+        "data-sort-type": item.sortType
+        "data-sort-key": item.key
+      , item.label)
+    ).bind(this)))
+    body = ctrl.data().map((item, index) ->
+      m("tr", ctrl.header().map((header) ->
+        m("td", item[header.key])
+      ))
+    )
+    m("table",
+      onclick: ctrl.handleTableClick
+    , [
+      head
+      body
+    ]
+    )
+
+m.module document.getElementById("container"), table
 ```
 
 [JSFiddle][4]

@@ -92,6 +92,11 @@ var inject = function(){
 };
 </code></pre>
 
+<pre><code class="language-coffeescript">@getHeaderClasses = (item) -&gt;
+  return table.state.sort.sortDir  if table.state.sort.sortKey is item.key
+  return &quot;&quot;
+</code></pre>
+
 <p>This function takes in an item we define in the <code>header</code> array of the table and returns a css class (<code>asc</code> or <code>des</code>) if the table is sorted by the key corresponding the header/column.</p>
 
 <p><a href="http://jsfiddle.net/jjk8bxeq/20/">JSFiddle</a></p>
@@ -108,7 +113,7 @@ var inject = function(){
         asc: 1,
         des: -1
     };
-    var sortMult = sortValues[table.state.sort.sortDir];
+    var sortMult = sortValues[state.sortDir];
     return table.data.sort(function (a, b) {
         aVal = a[state.sortKey];
         bVal = b[state.sortKey];
@@ -121,6 +126,26 @@ var inject = function(){
         return sortMult * result;
     });
 };
+</code></pre>
+
+<pre><code class="language-coffeescript">@data = -&gt;
+  state = table.state.sort
+  sortValues =
+    asc: 1
+    des: -1
+
+  sortMult = sortValues[state.sortDir]
+  return table.data.sort (a, b) -&gt;
+    aVal = a[state.sortKey]
+    bVal = b[state.sortKey]
+
+    # if aVal equals bVal
+    result = 0
+    if aVal &gt; bVal
+      result = 1
+    else result = -1  if aVal &lt; bVal
+    return sortMult * result
+
 </code></pre>
 
 <p>Essentialy, we have merged the sorting functionality with the retrieval of the data. Now, whenever our state updates, our data will be immediately resorted and our view will be automatically updated.</p>
@@ -138,9 +163,16 @@ var inject = function(){
 });
 </code></pre>
 
+<pre><code class="language-coffeescript">body = ctrl.data().map((item, index) -&gt;
+  m(&quot;tr&quot;, ctrl.header().map((header) -&gt;
+    m(&quot;td&quot;, item[header.key])
+  ))
+)
+</code></pre>
+
 <p>Instead of manually defining which key we want to display in which position, we iterate over the table header and use the key that corresponds to the column. </p>
 
-<p>Now we are ready to add more data and columns. I added names to our data but you are obviously free to add anything you want. And happily, we don&#39;t have to modify our code for the sorting to work on the new column.</p>
+<p>Now we are ready to add more data and columns. I added names to our data but you are obviously free to add anything you want. And since we layed down a good foundation, we don&#39;t have to modify our code for the sorting to work on the new column.</p>
 
 <pre><code class="language-javascript">var table = {
     state: {
@@ -187,7 +219,7 @@ var inject = function(){
                 asc: 1,
                 des: -1
             };
-            var sortMult = sortValues[table.state.sort.sortDir];
+            var sortMult = sortValues[state.sortDir];
             return table.data.sort(function (a, b) {
                 aVal = a[state.sortKey];
                 bVal = b[state.sortKey];
@@ -207,7 +239,7 @@ var inject = function(){
             if (sortKey &amp;&amp; sortType) {
                 table.changeSortState(sortKey, sortType);
             }
-        }.bind(this);
+        };
     },
     view: function (ctrl) {
         this.getHeaderClasses = function (item) {
@@ -235,6 +267,104 @@ var inject = function(){
 };
 
 m.module(document.getElementById(&#39;container&#39;), table);
+</code></pre>
+
+<pre><code class="language-coffeescript">table =
+  state:
+    sort:
+      sortKey: &quot;value&quot;
+      sortDir: &quot;des&quot;
+
+  data: [
+    {
+      name: &quot;John Smith&quot;
+      value: 11
+    }
+    {
+      name: &quot;James Henry&quot;
+      value: 10
+    }
+    {
+      name: &quot;Sam Johnson&quot;
+      value: 12
+    }
+  ]
+  header: [
+    {
+      label: &quot;Name&quot;
+      key: &quot;name&quot;
+      sortType: &quot;string&quot;
+    }
+    {
+      label: &quot;Value&quot;
+      key: &quot;value&quot;
+      sortType: &quot;int&quot;
+    }
+  ]
+  changeSortState: (sortKey, sortType) -&gt;
+    table.state.sort = {}  if not table.state.sort?
+    table.state.sort.sortKey = sortKey
+    table.state.sort.sortType = sortType
+    if table.state.sort.sortDir is &quot;asc&quot;
+      table.state.sort.sortDir = &quot;des&quot;
+    else
+      table.state.sort.sortDir = &quot;asc&quot;
+    return
+
+  controller: -&gt;
+    @data = -&gt;
+      state = table.state.sort
+      sortValues =
+        asc: 1
+        des: -1
+
+      sortMult = sortValues[state.sortDir]
+      return table.data.sort (a, b) -&gt;
+        aVal = a[state.sortKey]
+        bVal = b[state.sortKey]
+
+        # if aVal equals bVal
+        result = 0
+        if aVal &gt; bVal
+          result = 1
+        else result = -1  if aVal &lt; bVal
+        return sortMult * result
+
+
+    @header = m.prop(table.header)
+    @handleTableClick = (e) -&gt;
+      sortType = e.target.getAttribute(&quot;data-sort-type&quot;)
+      sortKey = e.target.getAttribute(&quot;data-sort-key&quot;)
+      table.changeSortState sortKey, sortType  if sortKey and sortType
+      return
+    return
+
+  view: (ctrl) -&gt;
+    @getHeaderClasses = (item) -&gt;
+      return table.state.sort.sortDir  if table.state.sort.sortKey is item.key
+      return &quot;&quot;
+
+    head = m(&quot;tr&quot;, ctrl.header().map(((item, index) -&gt;
+      m(&quot;th.clickable&quot;,
+        class: @getHeaderClasses(item)
+        &quot;data-sort-type&quot;: item.sortType
+        &quot;data-sort-key&quot;: item.key
+      , item.label)
+    ).bind(this)))
+    body = ctrl.data().map((item, index) -&gt;
+      m(&quot;tr&quot;, ctrl.header().map((header) -&gt;
+        m(&quot;td&quot;, item[header.key])
+      ))
+    )
+    m(&quot;table&quot;,
+      onclick: ctrl.handleTableClick
+    , [
+      head
+      body
+    ]
+    )
+
+m.module document.getElementById(&quot;container&quot;), table
 </code></pre>
 
 <p><a href="http://jsfiddle.net/jjk8bxeq/23/">JSFiddle</a></p>
