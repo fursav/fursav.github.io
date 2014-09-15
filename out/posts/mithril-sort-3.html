@@ -1,0 +1,267 @@
+<html>
+<head>
+    <title>Mithril Sortable Table - Part 3 | Better With Coffee</title>
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <meta name="generator" content="DocPad v6.69.0" />
+    <style >html.wait {
+	cursor: wait !important;
+	opacity: 0;
+	transition: opacity 0.5s ease;
+}</style><link  rel="stylesheet" href="/vendor/normalize.min.css" /><link  rel="stylesheet" href="/vendor/prism.css" /><link  rel="stylesheet" href="//brick.a.ssl.fastly.net/Clear+Sans:400,700,400i,700i" /><link  rel="stylesheet" href="/vendor/ionicons.min.css" /><link  rel="stylesheet" href="/styles/style.css" />
+
+    <script >(function(){
+	/* Did we just livereload? */
+var log = !!(localStorage && console && console.log && true);
+if ( log && localStorage.getItem('/docpad-livereload/reloaded') === 'yes' ) {
+	localStorage.removeItem('/docpad-livereload/reloaded');
+	console.log('LiveReload completed at', new Date())
+}
+
+/* Listen for the regenerated event and perform a reload of the page when the event occurs */
+var listen = function(){
+	var primus = new Primus('/docpad-livereload');
+	primus.on('data', function(data){
+		if ( data && data.message ) {
+			if ( data.message === 'generateBefore' ) {
+				if ( log ) {
+					console.log('LiveReload started at', new Date());
+				}
+				if ( typeof document.getElementsByTagName !== 'undefined' ) {
+	document.getElementsByTagName('html')[0].className += ' wait';
+}
+			}
+			else if ( data.message === 'generateAfter' ) {
+				if ( log ) {
+					localStorage.setItem('/docpad-livereload/reloaded', 'yes');
+				}
+				document.location.reload();
+			}
+		}
+	});
+};
+	/* Inject socket into our page */
+var inject = function(){
+	var t = document.createElement('script');
+	t.type = 'text/javascript';
+	t.async = 'async';
+	t.src = '/primus/primus.js';
+	t.onload = listen;
+	var s = document.getElementsByTagName('script')[0];
+	s.parentNode.insertBefore(t, s);
+};
+	if ( typeof Primus !== 'undefined' ) {
+		listen();
+	} else {
+		inject();
+	}
+})();</script><script defer="defer"  src="/vendor/prism.js"></script><script defer="defer"  src="/vendor/zepto.min.js"></script>
+</head>
+<body>
+    <header class="header">
+    <div class="aside">
+        <a class="icon-container" href="/"><i class="icon ion-coffee"></i></a>
+
+    </div>
+    <h1>Mithril Sortable Table - Part 3</h1>
+    <hr>
+    <time datatime="2014-09-15T00:00:00.000Z" class="fggray">
+        Sep 15 2014
+    </time>
+    <div class="switch-toggle" onclick="toggleLang(event)">
+      <input id="js" name="lang" type="radio">
+      <label for="js">JS</label>
+
+      <input id="cs" name="lang" type="radio" checked>
+      <label for="cs">Coffee</label>
+    </div>
+</header>
+<main class="container post">
+    
+    <article>
+        <p>In <a href="mithril-sort-2.html" title="Part 2">Part 2</a>, we improved our table by implementing initial sort and addding another column. In this post, we will add a computed column to our table and will allow the user to randomize the data.</p>
+
+<h2>Computed Column</h2>
+
+<p>Let&#39;s update our table to be a display of player statistics of some sport. Rename the &#39;Value&#39; column to be &#39;Points&#39; column and let&#39;s say all the players have played the same number of games. It would make sense for us to display the average number of points per game.</p>
+
+<p>The big question is where should we compute that field. In our current structure, the model holds an array of primitives and it would require a lot of refactoring to change that. So that rules out the model. Accomodating a special column in the view would also require some refactoring. The controller seems to me to be the path of least resistance. Since the data in the controller is already a function (i.e. a computed field), adding another computation should be fairly simple. </p>
+
+<p>After modifying our table header to include another column, all we have to do is insert this loop at the top of our <code>controller.data</code> function.</p>
+
+<pre><code class="language-javascript">table.data.forEach(function(player) {
+    player.avg = Math.floor(player.points*10/30)/10;
+});
+</code></pre>
+
+<pre><code class="language-coffeescript">for player in table.data
+    player.avg = Math.floor(player.points*10/30)/10
+});
+</code></pre>
+
+<p><a href="http://jsfiddle.net/jjk8bxeq/24/">JSFiddle</a></p>
+
+<h2>Random Data</h2>
+
+<p>Let&#39;s add a randomize button to our little table. First, let&#39;s update our view.</p>
+
+<pre><code class="language-javascript">var button = m(&quot;button&quot;,{onclick: ctrl.handleButtonClick},&quot;Generate Players&quot;);
+var tableView = m(&quot;table&quot;, {onclick: ctrl.handleTableClick},[head,body]);
+return m(&quot;div&quot;,[button,tableView]);
+</code></pre>
+
+<pre><code class="language-coffeescript">button = m(&quot;button&quot;,{onclick: ctrl.handleButtonClick},&quot;Generate Players&quot;)
+tableView = m(&quot;table&quot;, {onclick: ctrl.handleTableClick},[head,body])
+return m(&quot;div&quot;,[button,tableView])
+</code></pre>
+
+<p>Second, let&#39;s add a bunch of utility functions to generate random data for us.</p>
+
+<pre><code class="language-javascript">firstNames = [&quot;James&quot;, &quot;John&quot;, &quot;Robert&quot;, &quot;Michael&quot;, &quot;William&quot;, &quot;David&quot;, &quot;Richard&quot;,
+    &quot;Charles&quot;, &quot;Joseph&quot;, &quot;Thomas&quot;
+];
+lastNames = [&quot;Smith&quot;, &quot;Johnson&quot;, &quot;Williams&quot;, &quot;Brown&quot;, &quot;Jones&quot;, &quot;Miller&quot;, &quot;Davis&quot;,
+    &quot;Garcia&quot;, &quot;Rodriguez&quot;, &quot;Wilson&quot;
+];
+
+getRandomFromArr = function(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+};
+
+genName = function() {
+    var fname = getRandomFromArr(firstNames);
+    var lname = getRandomFromArr(lastNames);
+    return fname + &#39; &#39; + lname;
+};
+
+genPoints = function() {
+    return Math.floor(Math.random() * 500) + 500;
+};
+
+genPlayer = function() {
+    return {
+        name: genName(),
+        points: genPoints()
+    };
+};
+</code></pre>
+
+<pre><code class="language-coffeescript">firstNames = [&quot;James&quot;,&quot;John&quot;,&quot;Robert&quot;,&quot;Michael&quot;,&quot;William&quot;,&quot;David&quot;,&quot;Richard&quot;,
+             &quot;Charles&quot;,&quot;Joseph&quot;,&quot;Thomas&quot;]
+lastNames = [&quot;Smith&quot;,&quot;Johnson&quot;,&quot;Williams&quot;,&quot;Brown&quot;,&quot;Jones&quot;,&quot;Miller&quot;,&quot;Davis&quot;,
+             &quot;Garcia&quot;,&quot;Rodriguez&quot;,&quot;Wilson&quot;]
+
+getRandomFromArr = (arr) -&gt;
+    return arr[Math.floor(Math.random()*arr.length)]
+
+genName = -&gt;
+    fname = getRandomFromArr(firstNames)
+    lname = getRandomFromArr(lastNames)
+    return fname + &#39; &#39; + lname
+
+genValue = -&gt;
+    return Math.floor(Math.random()*500)+500
+
+genPlayer = -&gt;
+    return {
+            name: genName()
+            value: genValue()
+            }
+</code></pre>
+
+<p>Finally, let&#39;s add <code>controller.numPlayers</code> field that holds the number of player to generate and <code>controller.handleButtonClick</code> function that will invoke data randomization.</p>
+
+<pre><code class="language-javascript">this.handleButtonClick = function (e) {
+    var newData = [];
+    var i = 0;
+    while (i &lt; this.numPlayers()) {
+        newData.push(genPlayer());
+        i++;
+    }
+    table.data = newData;            
+}.bind(this);
+</code></pre>
+
+<pre><code class="language-coffeescript">@handleButtonClick = (e) =&gt;
+    newData = []
+    i = 0
+    while i &lt; @numPlayers()
+        newData.push(genPlayer())
+        i++
+    table.data = newData
+    return
+</code></pre>
+
+<p><a href="http://jsfiddle.net/jjk8bxeq/25/">JSFiddle</a></p>
+
+<h2>User Input</h2>
+
+<p>To finish things off, let&#39;s allow the user to decide how many players to generate. Simply add an input field to our view.</p>
+
+<pre><code class="language-javascript">var input = m(&quot;input&quot;, {
+    onchange: m.withAttr(&quot;value&quot;, ctrl.numPlayers),
+    value: ctrl.numPlayers()
+});
+</code></pre>
+
+<pre><code class="language-coffeescript">input = m(&quot;input&quot;,{onchange: m.withAttr(&quot;value&quot;, ctrl.numPlayers)})
+</code></pre>
+
+<p><a href="http://jsfiddle.net/jjk8bxeq/26/">JSFiddle</a></p>
+
+<p>The line of code <code>onchange: m.withAttr(&quot;value&quot;, ctrl.numPlayers)</code> provides us with data binding in the view-to-model direction while <code>value: ctrl.numPlayers()</code> binds in the model-to-view direction. This is also known as bidirectional data-binding.</p>
+
+<p>This completes the introduction to Mithril. Hopefully, you understand this tiny library a little more.</p>
+
+    </article>
+</main>
+<script >(function(){
+	/* Did we just livereload? */
+var log = !!(localStorage && console && console.log && true);
+if ( log && localStorage.getItem('/docpad-livereload/reloaded') === 'yes' ) {
+	localStorage.removeItem('/docpad-livereload/reloaded');
+	console.log('LiveReload completed at', new Date())
+}
+
+/* Listen for the regenerated event and perform a reload of the page when the event occurs */
+var listen = function(){
+	var primus = new Primus('/docpad-livereload');
+	primus.on('data', function(data){
+		if ( data && data.message ) {
+			if ( data.message === 'generateBefore' ) {
+				if ( log ) {
+					console.log('LiveReload started at', new Date());
+				}
+				if ( typeof document.getElementsByTagName !== 'undefined' ) {
+	document.getElementsByTagName('html')[0].className += ' wait';
+}
+			}
+			else if ( data.message === 'generateAfter' ) {
+				if ( log ) {
+					localStorage.setItem('/docpad-livereload/reloaded', 'yes');
+				}
+				document.location.reload();
+			}
+		}
+	});
+};
+	/* Inject socket into our page */
+var inject = function(){
+	var t = document.createElement('script');
+	t.type = 'text/javascript';
+	t.async = 'async';
+	t.src = '/primus/primus.js';
+	t.onload = listen;
+	var s = document.getElementsByTagName('script')[0];
+	s.parentNode.insertBefore(t, s);
+};
+	if ( typeof Primus !== 'undefined' ) {
+		listen();
+	} else {
+		inject();
+	}
+})();</script><script defer="defer"  src="/scripts/post1.js"></script>
+    <footer>
+        © 2014 Vlad Fursa. All Rights Reserved.
+    </footer>
+</body>
+</html>
